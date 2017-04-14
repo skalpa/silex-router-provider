@@ -5,6 +5,8 @@
 
 # Symfony Router Service Provider for Silex 2.x / Pimple 3.x
 
+ALPHA. First release in a few days.
+
 Lets you to use the full Symfony Router class in your
 Silex/Pimple application.
 
@@ -35,8 +37,8 @@ $app->register(new \Skalpa\Silex\Symfony\RouterServiceProvider(), [
 
 ## Configuration parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
+| Parameter | Type | Description |
+|-----------|------|-------------|
 | `router.debug`                | `bool`                    | Whether to enable the Router class debug mode |
 | `router.resource`             | `string`&#124;`string[]`  | Where to load the router configuration from |
 | `router.resource_type`        | `string`                  | Type of the resource (optional, needs to be set to `annotation` to import annotations from a PHP file) |
