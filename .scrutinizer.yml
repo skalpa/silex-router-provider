@@ -1,0 +1,12 @@
+filter:
+    paths: ["src/*"]
+build:
+    environment:
+        php: '5.6'
+    tests:
+        override:
+            -
+                command: 'vendor/bin/phpunit --coverage-clover=coverage-clover'
+                coverage:
+                    file: 'coverage-clover'
+                    format: 'clover'

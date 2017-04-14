@@ -1,0 +1,4 @@
+
+foo:
+    path:     /foo
+    defaults: { _controller: 'Skalpa\Silex\Symfony\Tests\Fixtures\FooController::fooAction' }

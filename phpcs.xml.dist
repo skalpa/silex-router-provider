@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="Skalpa">
+    <description>Skalpa coding standard</description>
+
+    <!-- Show progress and colorize output -->
+    <arg value="p"/>
+    <arg name="colors"/>
+
+    <file>src</file>
+
+    <rule ref="Symfony2" />
+
+    <rule ref="Symfony2.Commenting.ClassComment.Missing">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Symfony2.Commenting.FunctionComment.Missing">
+        <severity>0</severity>
+    </rule>
+</ruleset>

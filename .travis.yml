@@ -1,0 +1,17 @@
+language: php
+
+env:
+  global:
+    - REPORT_EXIT_STATUS=1
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+
+before_script:
+  - composer self-update
+  - COMPOSER_ROOT_VERSION=dev-master composer install
+
+script:
+  - ./vendor/bin/phpunit
