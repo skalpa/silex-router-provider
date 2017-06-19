@@ -138,4 +138,44 @@ class RouterServiceProviderTest extends TestCase
 
         $this->assertSame('fooAction result', $response->getContent());
     }
+
+    public function testSilexRoutesAreMatched()
+    {
+        $app = $this->getApplication([
+            'router.resource' => __DIR__.'/Fixtures/routing.xml',
+        ]);
+        $app->get('/bar', function () {
+            return 'silex bar result';
+        });
+
+        $response = $app->handle(Request::create('/bar'));
+
+        $this->assertSame('silex bar result', $response->getContent());
+    }
+
+    public function testConfigRoutesHavePrecedenceWhenMatching()
+    {
+        $app = $this->getApplication([
+            'router.resource' => __DIR__.'/Fixtures/routing.xml',
+        ]);
+        $app->get('/foo', function () {
+            return 'silex foo result';
+        });
+
+        $response = $app->handle(Request::create('/foo'));
+
+        $this->assertSame('fooAction result', $response->getContent());
+    }
+
+    public function testConfigRoutesHavePrecedenceWhenGeneratingUrls()
+    {
+        $app = $this->getApplication([
+            'router.resource' => __DIR__.'/Fixtures/routing.xml',
+        ]);
+        $app->get('/silex/foo', function () {
+            return 'silex foo result';
+        })->bind('foo');
+
+        $this->assertSame('/foo', $app['url_generator']->generate('foo'));
+    }
 }

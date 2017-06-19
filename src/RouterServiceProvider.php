@@ -114,16 +114,12 @@ class RouterServiceProvider implements ServiceProviderInterface
             return new ArrayLoader($container, 'router.delegating_loader');
         };
 
-        $container['url_generator'] = function (Container $container) {
-            return $container['router'];
-        };
+        $container->extend('url_generator', function ($silexGenerator, $container) {
+            return new ChainUrlGenerator([$container['router'], $silexGenerator], $container['request_context']);
+        });
 
-        $container['request_matcher'] = function (Container $container) {
-            return $container['router'];
-        };
-
-        $container['routes'] = function (Container $container) {
-            return $container['router']->getRouteCollection();
-        };
+        $container->extend('request_matcher', function ($silexMatcher, $container) {
+            return new ChainRequestMatcher([$container['router'], $silexMatcher]);
+        });
     }
 }
