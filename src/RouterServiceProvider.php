@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Loader\PhpFileLoader;
 use Symfony\Component\Routing\Loader\XmlFileLoader;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Router;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Symfony Routing service provider for Silex.
@@ -52,9 +53,6 @@ class RouterServiceProvider implements ServiceProviderInterface
         $container['router.file_locator'] = function (Container $container) {
             return new FileLocator($container['router.file_locator.paths']);
         };
-        $container['router.loader.yaml'] = function (Container $container) {
-            return new YamlFileLoader($container['router.file_locator']);
-        };
         $container['router.loader.xml'] = function (Container $container) {
             return new XmlFileLoader($container['router.file_locator']);
         };
@@ -62,7 +60,14 @@ class RouterServiceProvider implements ServiceProviderInterface
             return new PhpFileLoader($container['router.file_locator']);
         };
 
-        $loaders = ['router.loader.yaml', 'router.loader.xml', 'router.loader.php'];
+        $loaders = ['router.loader.xml', 'router.loader.php'];
+
+        if (class_exists(Yaml::class)) {
+            $container['router.loader.yaml'] = function (Container $container) {
+                return new YamlFileLoader($container['router.file_locator']);
+            };
+            $loaders[] = 'router.loader.yaml';
+        }
 
         if (class_exists(AnnotatedRouteControllerLoader::class) && class_exists(AnnotationReader::class)) {
             $container['router.annotations_reader'] = function () {

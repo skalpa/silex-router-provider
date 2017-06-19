@@ -9,6 +9,7 @@ use Silex\Application;
 use Skalpa\Silex\Symfony\Routing\RouterServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class RouterServiceProviderTest extends TestCase
 {
@@ -27,6 +28,10 @@ class RouterServiceProviderTest extends TestCase
 
     public function testWithYamlResource()
     {
+        if (!class_exists(Yaml::class)) {
+            $this->markTestSkipped('The Symfony Yaml component is required');
+        }
+
         $app = $this->getApplication([
             'router.resource' => __DIR__.'/Fixtures/routing.yml',
         ]);
@@ -38,7 +43,7 @@ class RouterServiceProviderTest extends TestCase
     public function testUrlCanGenerateUrls()
     {
         $app = $this->getApplication([
-            'router.resource' => __DIR__.'/Fixtures/routing.yml',
+            'router.resource' => __DIR__.'/Fixtures/routing.xml',
         ]);
 
         $this->assertSame('/foo', $app['url_generator']->generate('foo', [], UrlGeneratorInterface::ABSOLUTE_PATH));
@@ -92,7 +97,7 @@ class RouterServiceProviderTest extends TestCase
     {
         $app = $this->getApplication([
             'router.file_locator.paths' => [__DIR__.'/Fixtures'],
-            'router.resource' => 'routing.yml',
+            'router.resource' => 'routing.xml',
         ]);
         $response = $app->handle(Request::create('/foo'));
 
