@@ -5,6 +5,6 @@
         http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <route id="foo" path="/foo">
-        <default key="_controller">Skalpa\Silex\Symfony\Tests\Fixtures\FooController::fooAction</default>
+        <default key="_controller">Skalpa\Silex\Symfony\Routing\Tests\Fixtures\FooController::fooAction</default>
     </route>
 </routes>

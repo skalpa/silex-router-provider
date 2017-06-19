@@ -1,10 +1,10 @@
 <?php
 
-namespace Skalpa\Silex\Symfony\Tests\Loader;
+namespace Skalpa\Silex\Symfony\Routing\Tests\Loader;
 
 use PHPUnit\Framework\TestCase;
 use Pimple\Container;
-use Skalpa\Silex\Symfony\Loader\ArrayLoader;
+use Skalpa\Silex\Symfony\Routing\Loader\ArrayLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\Routing\Route;

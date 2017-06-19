@@ -1,6 +1,6 @@
 <?php
 
-namespace Skalpa\Silex\Symfony;
+namespace Skalpa\Silex\Symfony\Routing;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -9,7 +9,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Routing\AnnotatedRouteControllerLoader;
-use Skalpa\Silex\Symfony\Loader\ArrayLoader;
+use Skalpa\Silex\Symfony\Routing\Loader\ArrayLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;

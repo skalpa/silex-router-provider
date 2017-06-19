@@ -1,12 +1,12 @@
 <?php
 
-namespace Skalpa\Silex\Symfony\Tests;
+namespace Skalpa\Silex\Symfony\Routing\Tests;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use PHPUnit\Framework\TestCase;
 use Silex\Application;
-use Skalpa\Silex\Symfony\RouterServiceProvider;
+use Skalpa\Silex\Symfony\Routing\RouterServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 

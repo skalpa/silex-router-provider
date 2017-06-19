@@ -1,5 +1,5 @@
 {
-    "name": "skalpa/silex-router-provider",
+    "name": "silicates/silex-router-provider",
     "type": "library",
     "description": "Full Symfony Router support (caching, yaml, xml, annotations) for Silex 2.x",
     "keywords": ["silex", "provider", "symfony", "routing", "router", "yaml", "annotations"],
@@ -25,12 +25,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Skalpa\\Silex\\Symfony\\": "src/"
+            "Skalpa\\Silex\\Symfony\\Routing\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Skalpa\\Silex\\Symfony\\Tests\\": "tests/"
+            "Skalpa\\Silex\\Symfony\\Routing\\Tests\\": "tests/"
         }
     },
     "extra": {

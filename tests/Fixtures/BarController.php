@@ -1,6 +1,6 @@
 <?php
 
-namespace Skalpa\Silex\Symfony\Tests\Fixtures;
+namespace Skalpa\Silex\Symfony\Routing\Tests\Fixtures;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;

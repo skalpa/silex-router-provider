@@ -1,6 +1,6 @@
 <?php
 
-namespace Skalpa\Silex\Symfony\Loader;
+namespace Skalpa\Silex\Symfony\Routing\Loader;
 
 use Pimple\Container;
 use Symfony\Component\Config\Loader\LoaderInterface;

@@ -1,6 +1,6 @@
 <?php
 
-use Skalpa\Silex\Symfony\Tests\Fixtures\FooController;
+use Skalpa\Silex\Symfony\Routing\Tests\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 

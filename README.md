@@ -29,7 +29,7 @@ composer require sensio/framework-extra-bundle
 ## Registration
 
 ```php
-$app->register(new \Skalpa\Silex\Symfony\RouterServiceProvider(), [
+$app->register(new \Skalpa\Silex\Symfony\Routing\RouterServiceProvider(), [
     'router.resource' => '/path/to/routing.yml',
     'router.cache_dir' => '/path/to/cache',
 ]);
