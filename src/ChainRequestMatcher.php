@@ -7,18 +7,21 @@ use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
 
 /**
  * Calls several request matchers until one successfully recognizes the request.
  */
 class ChainRequestMatcher implements RequestMatcherInterface
 {
+    private $context;
     private $matchers;
 
     /**
      * @param RequestMatcherInterface[]|UrlMatcherInterface[] $matchers
+     * @param RequestContext                                  $context
      */
-    public function __construct(array $matchers)
+    public function __construct(array $matchers, RequestContext $context)
     {
         foreach ($matchers as $matcher) {
             if (!$matcher instanceof RequestMatcherInterface && !$matcher instanceof UrlMatcherInterface) {
@@ -26,6 +29,7 @@ class ChainRequestMatcher implements RequestMatcherInterface
             }
         }
         $this->matchers = $matchers;
+        $this->context = $context;
     }
 
     /**
@@ -43,6 +47,8 @@ class ChainRequestMatcher implements RequestMatcherInterface
                 if ($matcher instanceof RequestMatcherInterface) {
                     return $matcher->matchRequest($request);
                 } else {
+                    $matcher->setContext($this->context);
+
                     return $matcher->match($request->getPathInfo());
                 }
             } catch (ResourceNotFoundException $e) {

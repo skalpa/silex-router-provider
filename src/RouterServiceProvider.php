@@ -134,7 +134,7 @@ class RouterServiceProvider implements ServiceProviderInterface
         });
 
         $container->extend('request_matcher', function ($silexMatcher, $container) {
-            return new ChainRequestMatcher([$container['router'], $silexMatcher]);
+            return new ChainRequestMatcher([$container['router'], $silexMatcher], $container['request_context']);
         });
     }
 }

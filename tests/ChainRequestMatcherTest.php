@@ -7,6 +7,7 @@ use Silex\Provider\Routing\RedirectableUrlMatcher;
 use Skalpa\Silex\Symfony\Routing\ChainRequestMatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -30,13 +31,13 @@ class ChainRequestMatcherTest extends TestCase
 
         $routes2 = new RouteCollection();
         $routes2->add('baz_route', (new Route('/test/baz', ['_controller' => 'bazAction']))->setMethods('GET'));
-        $routes1->add('foo_route_post', (new Route('/test/foo', ['_controller' => 'fooAction']))->setMethods('POST'));
+        $routes2->add('foo_route_post', (new Route('/test/foo', ['_controller' => 'fooAction']))->setMethods('POST'));
         $this->bazMatcher = new RedirectableUrlMatcher($routes2, $this->context);
     }
 
     public function testMatchingFirstInChain()
     {
-        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher]);
+        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);
 
         $request = Request::create('/test/foo');
         $this->assertSame(['_controller' => 'fooAction', '_route' => 'foo_route'], $chain->matchRequest($request));
@@ -44,10 +45,29 @@ class ChainRequestMatcherTest extends TestCase
 
     public function testMatchingLastInChain()
     {
-        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher]);
+        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);
 
         $request = Request::create('/test/baz');
         $this->assertSame(['_controller' => 'bazAction', '_route' => 'baz_route'], $chain->matchRequest($request));
+    }
+
+    public function testMatchingUsingUrlMatcher()
+    {
+        $context = (new RequestContext())->setPathInfo('/test/');
+
+        $matcher = $this->getMockBuilder(UrlMatcherInterface::class)->getMock();
+        $matcher->expects($this->once())
+            ->method('setContext')
+            ->with($context);
+        $matcher->expects($this->once())
+            ->method('match')
+            ->with('/foo')
+            ->willReturn(['_controller' => 'controller:foo']);
+
+        $chain = new ChainRequestMatcher([$matcher], $context);
+
+        $request = Request::create('/foo');
+        $this->assertSame(['_controller' => 'controller:foo'], $chain->matchRequest($request));
     }
 
     /**
@@ -55,7 +75,7 @@ class ChainRequestMatcherTest extends TestCase
      */
     public function testFailIfMethodIsNotAllowed()
     {
-        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher]);
+        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);
 
         $request = Request::create('/test/baz', 'POST');
         // The matcher retrieves the method from the RequestContext and not the request itself
@@ -65,7 +85,7 @@ class ChainRequestMatcherTest extends TestCase
 
     public function testDoesNotFailImmediatelyIfMethodIsNotAllowed()
     {
-        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher]);
+        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);
 
         $request = Request::create('/test/foo');
         $this->context->setMethod('POST');
@@ -77,7 +97,7 @@ class ChainRequestMatcherTest extends TestCase
      */
     public function testFailIfRouteIsNotMatched()
     {
-        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher]);
+        $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);
 
         $request = Request::create('invalid');
         $chain->matchRequest($request);
