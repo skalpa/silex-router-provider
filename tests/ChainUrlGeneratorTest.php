@@ -64,4 +64,14 @@ class ChainUrlGeneratorTest extends TestCase
 
         $chain->generate('invalid');
     }
+
+    public function testRequestContextCanBeChanged()
+    {
+        $chain = new ChainUrlGenerator([$this->fooGenerator, $this->bazGenerator], $this->context);
+        $chain->setContext($context = (new RequestContext())->setPathInfo('/test/'));
+
+        $this->assertSame($context, $chain->getContext());
+        $this->assertSame($context, $this->fooGenerator->getContext());
+        $this->assertSame($context, $this->bazGenerator->getContext());
+    }
 }
