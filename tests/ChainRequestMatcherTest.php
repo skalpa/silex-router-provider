@@ -35,6 +35,14 @@ class ChainRequestMatcherTest extends TestCase
         $this->bazMatcher = new RedirectableUrlMatcher($routes2, $this->context);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testThrowExceptionIfMatcherIsInvalid()
+    {
+        new ChainRequestMatcher([new \stdClass()], $this->context);
+    }
+
     public function testMatchingFirstInChain()
     {
         $chain = new ChainRequestMatcher([$this->fooMatcher, $this->bazMatcher], $this->context);

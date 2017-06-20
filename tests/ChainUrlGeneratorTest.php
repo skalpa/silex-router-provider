@@ -74,4 +74,12 @@ class ChainUrlGeneratorTest extends TestCase
         $this->assertSame($context, $this->fooGenerator->getContext());
         $this->assertSame($context, $this->bazGenerator->getContext());
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testThrowExceptionIfPassedGeneratorIsInvalid()
+    {
+        new ChainUrlGenerator([new \stdClass()], $this->context);
+    }
 }
