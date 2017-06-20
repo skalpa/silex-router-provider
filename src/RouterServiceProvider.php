@@ -8,7 +8,8 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Routing\AnnotatedRouteControllerLoader;
+use Silex\Provider\Routing\RedirectableUrlMatcher;
+use Skalpa\Silex\Symfony\Routing\Loader\AnnotationClassLoader;
 use Skalpa\Silex\Symfony\Routing\Loader\ArrayLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -18,6 +19,7 @@ use Symfony\Component\Routing\Loader\AnnotationFileLoader;
 use Symfony\Component\Routing\Loader\PhpFileLoader;
 use Symfony\Component\Routing\Loader\XmlFileLoader;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Yaml\Yaml;
 
@@ -29,16 +31,18 @@ class RouterServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container['router.debug'] = isset($container['debug']) ? $container['debug'] : false;
+        $container['router.cache_dir'] = null;
         $container['router.resource'] = null;
         $container['router.resource_type'] = null;
-        $container['router.cache_dir'] = null;
         $container['router.file_locator.paths'] = [];
         $container['router.options'] = [];
         $container['router'] = function (Container $container) {
             $options = array_replace([
-                'debug'         => $container['router.debug'],
-                'cache_dir'     => $container['router.cache_dir'],
-                'resource_type' => $container['router.resource_type'],
+                'debug'              => $container['router.debug'],
+                'cache_dir'          => $container['router.cache_dir'],
+                'resource_type'      => $container['router.resource_type'],
+                'matcher_class'      => RedirectableUrlMatcher::class,
+                'matcher_base_class' => RedirectableUrlMatcher::class,
             ], $container['router.options']);
 
             return new Router(
@@ -69,32 +73,43 @@ class RouterServiceProvider implements ServiceProviderInterface
             $loaders[] = 'router.loader.yaml';
         }
 
-        if (class_exists(AnnotatedRouteControllerLoader::class) && class_exists(AnnotationReader::class)) {
-            $container['router.annotations_reader'] = function () {
+        if (class_exists(AnnotationReader::class)) {
+            $container['router.annotation.reader'] = function () {
                 AnnotationRegistry::registerLoader('class_exists');
 
                 return new CachedReader(new AnnotationReader(), new ArrayCache());
             };
 
-            $container['router.annotations_loader'] = function (Container $container) {
-                if (is_string($reader = $container['router.annotations_reader'])) {
-                    $reader = $container[$reader];
+            $container['router.annotation.configuration_strategy'] = $container->protect(function (Route $route, \ReflectionClass $class, \ReflectionMethod $method) use ($container) {
+                if (isset($container[$class->name])) {
+                    $route->setDefault('_controller', $class->name.':'.$method->name);
+                } elseif ('__invoke' === $method->name) {
+                    $route->setDefault('_controller', $class->name);
+                } else {
+                    $route->setDefault('_controller', $class->name.'::'.$method->name);
                 }
+            });
 
-                return new AnnotatedRouteControllerLoader($reader);
+            $container['router.loader.annotation.class'] = function (Container $container) {
+                return new AnnotationClassLoader(
+                    is_string($reader = $container['router.annotation.reader']) ? $container[$reader] : $reader,
+                    $container['router.annotation.configuration_strategy']
+                );
             };
 
-            $container['router.loader.annotation_file'] = function (Container $container) {
-                return new AnnotationFileLoader($container['router.file_locator'], $container['router.annotations_loader']);
+            $container['router.loader.annotation.file'] = function (Container $container) {
+                return new AnnotationFileLoader($container['router.file_locator'], $container['router.loader.annotation.class']);
             };
 
-            $container['router.loader.annotation_directory'] = function (Container $container) {
-                return new AnnotationDirectoryLoader($container['router.file_locator'], $container['router.annotations_loader']);
+            $container['router.loader.annotation.directory'] = function (Container $container) {
+                return new AnnotationDirectoryLoader($container['router.file_locator'], $container['router.loader.annotation.class']);
             };
 
-            $loaders[] = 'router.loader.annotation_file';
-            $loaders[] = 'router.loader.annotation_directory';
+            $loaders[] = 'router.loader.annotation.class';
+            $loaders[] = 'router.loader.annotation.file';
+            $loaders[] = 'router.loader.annotation.directory';
         }
+
         $container['router.loaders'] = $loaders;
 
         $container['router.delegating_loader'] = function (Container $container) {

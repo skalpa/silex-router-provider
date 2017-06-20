@@ -2,8 +2,8 @@
 
 namespace Skalpa\Silex\Symfony\Routing\Tests\Fixtures;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class BarController
 {
@@ -13,5 +13,13 @@ class BarController
     public function barAction()
     {
         return new Response('barAction result');
+    }
+
+    /**
+     * @Route("/bar/invoke", name = "bar_invoke")
+     */
+    public function __invoke()
+    {
+        return new Response('barInvoke result');
     }
 }
